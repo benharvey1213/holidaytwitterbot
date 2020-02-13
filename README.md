@@ -1,1 +1,1 @@
-# not-a-holiday-bot-twitter
+# Not a Holiday Twitter Bot
