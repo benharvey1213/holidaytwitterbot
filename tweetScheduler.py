@@ -7,7 +7,7 @@ from pushbullet import Pushbullet
 import csv, datetime, time
 
 # Pushbullet API key to send notifications to my phone
-pb = Pushbullet('PUSHBULLET API KEY HERE')
+pb = Pushbullet('o.gMK4UM8503O21SuCRTQ250K4h2fF5gcO')
 
 # cron object to manage crontab jobs
 cron = CronTab(user='pi')
@@ -27,9 +27,12 @@ for job in cron:
 		cron.remove(job)
 		print(job.command)
 
+todaysTweets = open("./data/todaysTweets.txt", "r+")
+todaysTweets.truncate(0)
+
 # parse the notholidays csv and populate the tweets array with today's tweets
 print('\nadding jobs...')
-with open('/home/pi/notholidays.csv') as csv_file:
+with open('/home/pi/data/notholidays.csv') as csv_file:
 	csv_reader = csv.reader(csv_file, delimiter=',')
 	line_count = 0
 	for row in csv_reader:
@@ -37,6 +40,9 @@ with open('/home/pi/notholidays.csv') as csv_file:
 			tweetContent = row[2]
 			tweetHashtag = '#' + row[2].replace(' ','')
 			tweetHashtag = tweetHashtag.replace("'", '')
+
+			todaysTweets.write(tweetHashtag + "\n")
+
 			finalTweet = "" +  tweetContent + " is not a real holiday. " + tweetHashtag
 			tweets.append(finalTweet)
 			print(finalTweet)
@@ -76,14 +82,14 @@ elif tweetsLength == 6:
 	tweetTimes.append(datetime.time(14, 0, 0))
 elif tweetsLength == 7:
 	tweetTimes.append(datetime.time(9, 0, 0))
-	tweetTimes.append(datetime.time(10, 0, 0))
-	tweetTimes.append(datetime.time(11, 0, 0))
-	tweetTimes.append(datetime.time(12, 0, 0))
-	tweetTimes.append(datetime.time(13, 0, 0))
-	tweetTimes.append(datetime.time(14, 0, 0))
+        tweetTimes.append(datetime.time(10, 0, 0))
+        tweetTimes.append(datetime.time(11, 0, 0))
+        tweetTimes.append(datetime.time(12, 0, 0))
+        tweetTimes.append(datetime.time(13, 0, 0))
+        tweetTimes.append(datetime.time(14, 0, 0))
 	tweetTimes.append(datetime.time(15, 0, 0))
 else:
-	pb.push_note('ERROR: More than 7 tweets today')
+	pb.push_note('ERROR', 'More than 7 tweets today')
 
 # for task scheduling
 for tweet in range(len(tweets)):
@@ -102,6 +108,8 @@ for tweet in range(len(tweets)):
 
 	# adds the job to the cron file
 	cron.write()
+
+	# add the 
 
 # notification handling
 if (len(tweets) == 0):
